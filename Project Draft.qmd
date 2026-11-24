@@ -1,0 +1,249 @@
+---
+title: "Improving the Workflow for Collecting Shot Statistics for the Pomona-Pitzer Women’s Water Polo Team"
+author: "Natalie Sullivan Wu"
+format: html
+editor: visual
+execute-dir: project
+---
+
+## 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+
+library(tidyverse)
+library(openxlsx)
+```
+
+## Introduction
+
+Like any other sport, traditional water polo statistics such as shots, goals, assists, and steals provide a surface-level summary of a team’s performance. However, they do not describe the full circumstances surrounding each shot and play. Shot statistics, in particular, can give a lot of insight into a team or individual’s success. Generally, an individual’s shot statistics record their shot attempts, goals, and shooting percentages. Pomona-Pitzer Water Polo statistics are no different. Dwindling shooting performance into these three statistics overlooks the many factors that can impact a shot and furthermore a win or loss. Shots differ in a shooter’s position, preparation, target location, and more. A more detailed shot-level dataset can provide coaches and players with information that is not available from the box-score statistics alone.
+
+The Pomona-Pitzer Women’s Water Polo (PPWWP) team currently uses Hudl Sportscode, a popular sports performance and video analysis software, to record and review game film. During or after games, coaches and student-athletes tag events such as shots, goals, exclusions, possessions, and turnovers. Additional shot characteristics can then be added by reviewing the game film. While this process provides useful, basic information, it requires substantial manual work and can take a significant amount of time to produce statistics beyond what Sportscode provides, such as a complete shot analysis.
+
+The goal of this project is to create a reproducible workflow that transforms existing Sportscode data into a standardized shot-level data set while reducing unnecessary manual data entry. Information that already exists in Sportscode, such as shot time stamps, goals, and game situations, is extracted using R. Characteristics that require visual judgment, such as the shooter, shot location, shot type, target location, and defensive pressure, are coded manually using standardized categories. The resulting data set will contain one observation for each Pomona-Pitzer shot with both the standardized data from Sportscode and manual coded data while simultaneously observing the individual shots. The project aims to improve the current workflow that coaches use to analyze shot-data and create an interactive shot analysis dashboard to display statistical findings.
+
+## Background & Context
+
+Previous sport and water polo research demonstrates why detailed shot information can be valuable. Canossa et al. (2020) look at shooting performance in high-level water polo and consider characteristics including shot location, defensive pressure, player advantage, and shot success. Gullikson et al. (2023) similarly use manually coded NCAA water polo game film to study variables including shot location, offensive situation, shot-clock time, defensive situation, and whether a shot resulted in a goal. Together, these studies provide a framework for deciding which characteristics are useful to record. However, my project differs in its primary emphasis. Rather than beginning with an already completed data set, a major objective of this project is developing the process that creates that data set from PPWWP’s existing Sportscode files. PPWWP already possesses substantial information in its tagged game film. However, the data is not structured for a statistical analysis, creating a challenge for coaches. Sportscode records many overlapping events across the game timeline, and historically, any additional shot characteristics have required manual review. 
+
+A second component of the project is how the resulting information is communicated. Goudsmit et al. (2022) demonstrate the usefulness of involving coaches in the design of sports-performance dashboards. This project similarly prioritizes the practical needs of PPWWP coaches. The final Shiny dashboard is intended to allow users to filter and compare shots by variables such as shooter, game, shot type, game situation, and outcome rather than requiring coaches to work directly with the underlying data set.
+
+## The Data
+
+This project uses game film from the Pomona-Pitzer Women’s Water Polo (PPWWP) 2026 season. Limiting the film to one season keeps the data set manageable, while reducing variation in the roster and coaching staff, as players graduate, join, or leave the program. While Pomona-Pitzer is Division III, the PPWWP team plays Division I, II, and III teams throughout their season. Opponents in each division vary in difficulty, and thus I will only use the teams ranked in the final 2026 Collegiate Water Polo Association (CWPA) top 25. The CWPA national varsity rankings are determined by a committee of coaches and athletic representatives who rank teams based primarily on game results. Although Claremont-Mudd-Scripps (CMS) is not ranked in the top 25, I chose to include them, as they are PP’s rivals and PPWWP’s biggest Division III opponent. During the 2026 season, PPWWP played 14 games against 12 teams ranked in the top 25, with two of those opponents played twice. Additionally, PPWWP played against CMS four times, thus this project includes 18 games. The PPWWP coaching staff is most concerned with the top teams, and limiting the sample in this way addresses their needs accordingly.  
+
+The raw data consist of Hudl Sportscode CSV export files from 18 PPWWP games. Across the 18 files, there are roughly 12,000 event-level observations, with approximately 500–750 tagged events per game. Each observation, or row of data, is a tagged interval or event on the game timeline. Each observation includes its start time, duration, event category, and instance number. Tags include shots, goals, possessions, exclusions, power-play situations, turnovers, player participation, and other game events. Because multiple tags can overlap during the same play, the exported files require additional organization before they can be used for shot analysis. Additionally, the files vary across games in the titles of tagged intervals/events, such as “PP Shot” vs “D Shot” (Dark) or “W Shot” (White), and the coded columns (i.e. some games have more columns than others). Therefore, this project requires standardizing the raw files, identifying PP shots and their relevant game-situation context, and combining these with the shot characteristics that need to be observed from the corresponding game film. The result will be a standardized workflow that produces a consistent data set where each row is one PP shot.
+
+```{r}
+raw_files <- list.files(
+  "data/raw",
+  pattern = "[.]csv$",
+  full.names = TRUE
+)
+
+# Remove old incomplete UCSD file
+raw_files <- raw_files[
+  basename(raw_files) != "GM1 - PPvsUCSD.csv"
+]
+
+# Check that R found the 18 files
+length(raw_files)
+
+game_file_summary <- map_dfr(raw_files, \(path) {
+  
+  game <- read_csv(path, show_col_types = FALSE)
+  
+  tibble(
+    game_number = as.numeric(
+      str_extract(basename(path), "(?<=GM)\\d+")
+    ),
+    filename = basename(path),
+    rows = nrow(game),
+    columns = ncol(game)
+  )
+}) |>
+  arrange(game_number)
+
+game_file_summary
+```
+
+## Data Processing & Analysis
+
+Before the shot data can be analyzed, the raw Sportscode files must first be cleaned and organized into a consistent structure. Each Sportscode CSV represents one tagged game. Although the same methodology is applied to each game, Sportscode labels and time stamps vary, making it necessary to code and process games individually.
+
+#### Creating the Shot Data Set
+
+Each Sportscode CSV file represents the tagged events of a single game. The raw files contain hundreds of tagged time stamps and are first reduced to the start time, end time, duration, and event type.
+
+Using Game 3, played against Long Beach State for example:
+
+```{r}
+file_csv <- "data/raw/GM3 - PPvsLBSU.csv"
+
+tagged_actions <- read_csv(
+  file_csv,
+  show_col_types = FALSE
+) |>
+  transmute(
+    action_id = row_number(),
+    start_time = `Start time`,
+    end_time = `Start time` + Duration,
+    code = Row,
+    duration_time_sec = Duration
+  )
+
+tagged_actions |>
+  slice_head(n = 5)
+```
+
+This creates a much more simplified version of the file while preserving all the information needed.
+
+The process of identifying Pomona-Pitzer (PP) shots varies slightly across games. In the LBSU game, PP shots are labeled "PP Shots", however the exact labeling is inconsistent throughout files. The PP shots are filtered from the broader events table shown above, ordered by start time and assigned a shot ID.
+
+```{r}
+pp_shots <- tagged_actions |>
+  filter(code == "PP Shots") |>
+  arrange(start_time) |>
+  mutate(
+    shot_id = row_number(),
+    start_time_min = floor(start_time / 60),
+    start_time_sec = start_time %% 60
+  )
+pp_shots
+```
+
+The LBSU game had 32 PP shots, which is seen in the number of rows.
+
+#### Matching Sportscode Information
+
+I use the time stamps of other Sportscode tags to add information that is already available from the tagged data. This includes whether a shot resulted in a goal and the corresponding possession situation, meaning if the shot came from an advantage possession (6on5 or 7on6), even possession, or penalty.
+
+```{r}
+pp_goals <- tagged_actions |>
+  filter(code == "W Goals")
+
+pp_shots <- pp_shots |>
+  rowwise() |>
+  mutate(
+    goal = as.integer(
+      any(
+        abs(pp_goals$start_time - start_time) <= 2.1
+      )
+    )
+  ) |>
+  ungroup()
+```
+
+```{r}
+pp_advantage <- tagged_actions |>
+  filter(code %in% c("W 6/5", "W 5/6", "W 7/6"))
+pp_penalties <- tagged_actions |>
+  filter(code == "W PENALTY")
+
+# add to the table
+pp_shots <- pp_shots |>
+  rowwise() |>
+  mutate(
+    advantage = case_when(
+      any( # Penalty shot 
+        start_time >= pp_penalties$end_time &
+          start_time - pp_penalties$end_time <= 15
+      ) ~ "penalty",
+      any(
+        pp_advantage$code == "W 7/6" &
+          start_time >= pp_advantage$start_time &
+          start_time <= pp_advantage$end_time
+      ) ~ "7v6",
+      any(
+        pp_advantage$code == "W 6/5" &
+          start_time >= pp_advantage$start_time &
+          start_time <= pp_advantage$end_time
+      ) ~ "6v5",
+      TRUE ~ "even"
+    )
+  ) |>
+  ungroup()
+count(pp_shots, advantage)
+```
+
+In the LBSU game, PP had 10 shots during 6on5, 1 shot during a 7on6 possession, 19 even, or normal possession, shots, and 2 penalty shots. Similar to the PP shot identification process, the labels of these events vary slightly across games.
+
+#### Manual Coding
+
+After the Sportscode information get processed, each game's clean data set of shots gets exported to an Excel template. In addition to the identifiable information from Sportscode, the template holds space to enter additional variables I manually coded.
+
+```{r}
+coding_sheet <- pp_shots |>
+  mutate(
+    game_id = "GM3",
+    opponent = "Long Beach State",
+    
+    shooter = NA_character_,
+    shot_zone = NA_character_,
+    shot_type = NA_character_,
+    shot_prep = NA_character_,
+    target_loc = NA_character_,
+    defense = NA_character_,
+    
+    result = if_else(
+      goal == 1,
+      "Goal",
+      NA_character_
+    )
+  )
+```
+
+These variables include the shooter, their position, the shot preparation and type, the defensive situation, target location, advantage-specific variables, and more. The Excel template uses pre-defined drop down menus to enter values, which limits typing errors and keeps the coding consistent across games.
+
+```{r}
+shot_type_options <- c(
+  "Direct", "Skip", "Lob", "Other", "Unsure"
+)
+shot_prep_options <- c(
+  "Catch & Shot", "Quick", "Fake & Shot", "Foul & Shot", "Pick-Up & Shot", "Other", "N/A"
+)
+defense_options <- c(
+  "Open", "Pressured", "Dropped Back", "Unsure", "N/A"
+)
+result_options <- c(
+  "Goal", "Goalie Save", "Field Block", "Miss", "Unsure"
+)
+```
+
+To complete the shot data set, I review each individual shot using its corresponding time stamp, and record the manually coded characteristics.
+
+#### Analysis
+
+Once all 18 games are processed and reviewed, they will be combined into one data set. The analysis will use the primary outcome variable of whether a shot resulted in a goal, and will use counts, shooting percentages, and visualizations to look at the PPWWP team's shooting patterns. Using a Shiny dashboard, coaches will be able to interact with filters to reveal different PPWWP shooting patterns.
+
+## Ethical Challenges & Limitations
+
+A main ethical consideration in my capstone project is making sure that the data is consistent and accurate. There are two components to collecting shot data from the game film that each have their own ethical considerations: the Sportscode data and the shot characteristics data. The Sportscode data captures the tagged timeline of each game. It records the opponent, start time of the shot, the duration, number of shots in a game, the type of possession (counter attack, 6on5, 7on6, penalty, or even), and the result of the shot (goal or non-goal). This data is entered by a player or coach either during or after the game, which leaves room for human error in the tagging process. The film-tagger may accidentally give a shot to the wrong team, start the shot tag way before the shot took place, or accidentally exclude the type of possession of the shot. While these errors are a concern in the accuracy of the shot data, they are not a large concern of this project. The main concentration is creating a shot-analysis dashboard with the tagged data the PPWWP team already has. The shot characteristics data is manually-entered observations that I will enter in a coded Excel sheet with dropdown menus to avoid typos and misspelled data. The shot characteristics capture the shot type, the shooter’s location, if the shooter was a center, the shot location in the goal, and if there was defensive pressure. This data will be entered as I watch the tagged game footage, which also leaves room for human error. Some shot characteristic entries may be subjective. For example, if a shooter is in between two positions, I may record a position that another reviewer disagrees with. While human error and bias cannot be completely avoided, I will carefully define each manual shot characteristic in a data dictionary to address human error the best I can. 
+
+Another ethical consideration is the potential for bias in my selection of games and shot characteristics. I am focusing on games played against the nationally ranked top 25 opponents and Claremont-Mudd-Scripps rather than using all the games played during the 2026 season. While this keeps games competitive and makes the amount of film manageable, it additionally means the dataset may not fully represent PPWWP’s overall shooting performance, as PPWWP was ranked just outside the top 25 teams for the 2026 season. Many games against top-ranked opponents resulted in losses, and the shooting statistics could reflect the opponent’s difficulty rather than the PPWWP team’s typical performance. The selection of shot characteristics may also create some ethical considerations. The manually coded shot-characteristics may not capture every aspect of a shot, due to the nuances of sports games, however, they will capture most. To address these biases the best I can, I will create filters such as a score-differential slider, opponent selection, and shot characteristic selection, which will allow coaches to filter shot statistics in the context of how competitive matches were. This won’t eliminate bias, but will help viewers interpret the results. 
+
+Finally, because the project uses team-owned footage and individual player statistics, a large ethical consideration is player privacy and how the data is shared. I plan to limit the identifiable information of players and work with the coaching staff to determine how the dashboard will be used. Ultimately, my goal is to create a system that collects data and presents it in a useful, accurate, and reliable way. While I have not yet completed the full coding process or application, I am incorporating these considerations into the project's design.
+
+\
+
+## Conclusion
+
+The primary contribution of this project is the development of a reproducible process for transforming PPWWP’s existing Sportscode data into a standardized shot-level dataset. Although the coaching staff already collects information through game tagging, the raw exports contain overlapping events, inconsistent naming conventions, information that still requires manual review, or simply not enough automated information to make substantial conclusions.
+
+The workflow developed in this project separates information that can be extracted automatically from information that requires human observation. R is used to identify shots, attach existing Sportscode context, validate outcomes, and organize the data, while a standardized coding template is used for shot characteristics that require film review.
+
+The next steps are to finish processing the remaining games, complete the manual shot coding, combine the individual games into one master data set, and analyze shooting patterns. The final stage of the project will use an R Shiny dashboard to make the resulting data easier for coaches to explore.
+
+Even if the final statistical analysis remains relatively simple, the project demonstrates an important role for data science in sports: creating reliable and reproducible systems that turn information that already exists into data that can actually be analyzed and used.
+
+## References
+
+Canossa, S., Abraldes, J. A., Estriga, L., Fernandes, R. J., & Garganta, J. (2020). “Water Polo Shooting Performance: Differences Between World Championship Winning, Drawing and Losing Teams.” Journal of Human Kinetics, 72, 203–214. doi:10.2478/hukin-2019-0107.
+
+Goudsmit, J., Otter, R. T. A., Stoter, I., van Holland, B., van der Zwaard, S., de Jong, J., & Vos, S. (2022). “Co-Operative Design of a Coach Dashboard for Training Monitoring and Feedback.” Sensors, 22(23), 9073. doi:10.3390/s22239073.
+
+Gullikson, J., Gale, L. R., Mayberry, J. K., Kim, J., & Killick, L. (2023). “Production functions of NCAA men and women water polo matches.” Journal of Sports Analytics, 9(2), 141–155. doi:10.3233/JSA-220600.

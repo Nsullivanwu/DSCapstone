@@ -1,0 +1,17 @@
+data/raw/
+data/processed/
+video/
+SportsCode User Data/
+
+*.xlsx
+*.numbers
+
+.Rhistory
+.RData
+.Rapp.history
+.Rproj.user/
+.DS_Store
+
+Project Draft_files/
+GM10 - PPvsSJSU/
+GM1_PPvsUCSD_manual_V1/

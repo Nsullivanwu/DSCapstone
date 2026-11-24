@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Natalie Sullivan Wu">
+
+<title>Improving the Workflow for Collecting Shot Statistics for the Pomona-Pitzer Women’s Water Polo Team</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Project Draft_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Project Draft_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="Project Draft_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="Project Draft_files/libs/quarto-html/popper.min.js"></script>
+<script src="Project Draft_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Project Draft_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Project Draft_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Project Draft_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Project Draft_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Project Draft_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Project Draft_files/libs/bootstrap/bootstrap-917079515d91bccb85b543faf8aa8bb6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Improving the Workflow for Collecting Shot Statistics for the Pomona-Pitzer Women’s Water Polo Team</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Natalie Sullivan Wu </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="section" class="level2">
+<h2 class="anchored" data-anchor-id="section"></h2>
+</section>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>Like any other sport, traditional water polo statistics such as shots, goals, assists, and steals provide a surface-level summary of a team’s performance. However, they do not describe the full circumstances surrounding each shot and play. Shot statistics, in particular, can give a lot of insight into a team or individual’s success. Generally, an individual’s shot statistics record their shot attempts, goals, and shooting percentages. Pomona-Pitzer Water Polo statistics are no different. Dwindling shooting performance into these three statistics overlooks the many factors that can impact a shot and furthermore a win or loss. Shots differ in a shooter’s position, preparation, target location, and more. A more detailed shot-level dataset can provide coaches and players with information that is not available from the box-score statistics alone.</p>
+<p>The Pomona-Pitzer Women’s Water Polo (PPWWP) team currently uses Hudl Sportscode, a popular sports performance and video analysis software, to record and review game film. During or after games, coaches and student-athletes tag events such as shots, goals, exclusions, possessions, and turnovers. Additional shot characteristics can then be added by reviewing the game film. While this process provides useful, basic information, it requires substantial manual work and can take a significant amount of time to produce statistics beyond what Sportscode provides, such as a complete shot analysis.</p>
+<p>The goal of this project is to create a reproducible workflow that transforms existing Sportscode data into a standardized shot-level data set while reducing unnecessary manual data entry. Information that already exists in Sportscode, such as shot time stamps, goals, and game situations, is extracted using R. Characteristics that require visual judgment, such as the shooter, shot location, shot type, target location, and defensive pressure, are coded manually using standardized categories. The resulting data set will contain one observation for each Pomona-Pitzer shot with both the standardized data from Sportscode and manual coded data while simultaneously observing the individual shots. The project aims to improve the current workflow that coaches use to analyze shot-data and create an interactive shot analysis dashboard to display statistical findings.</p>
+</section>
+<section id="background-context" class="level2">
+<h2 class="anchored" data-anchor-id="background-context">Background &amp; Context</h2>
+<p>Previous sport and water polo research demonstrates why detailed shot information can be valuable. Canossa et al.&nbsp;(2020) look at shooting performance in high-level water polo and consider characteristics including shot location, defensive pressure, player advantage, and shot success. Gullikson et al.&nbsp;(2023) similarly use manually coded NCAA water polo game film to study variables including shot location, offensive situation, shot-clock time, defensive situation, and whether a shot resulted in a goal. Together, these studies provide a framework for deciding which characteristics are useful to record. However, my project differs in its primary emphasis. Rather than beginning with an already completed data set, a major objective of this project is developing the process that creates that data set from PPWWP’s existing Sportscode files. PPWWP already possesses substantial information in its tagged game film. However, the data is not structured for a statistical analysis, creating a challenge for coaches. Sportscode records many overlapping events across the game timeline, and historically, any additional shot characteristics have required manual review.&nbsp;</p>
+<p>A second component of the project is how the resulting information is communicated. Goudsmit et al.&nbsp;(2022) demonstrate the usefulness of involving coaches in the design of sports-performance dashboards. This project similarly prioritizes the practical needs of PPWWP coaches. The final Shiny dashboard is intended to allow users to filter and compare shots by variables such as shooter, game, shot type, game situation, and outcome rather than requiring coaches to work directly with the underlying data set.</p>
+</section>
+<section id="the-data" class="level2">
+<h2 class="anchored" data-anchor-id="the-data">The Data</h2>
+<p>This project uses game film from the Pomona-Pitzer Women’s Water Polo (PPWWP) 2026 season. Limiting the film to one season keeps the data set manageable, while reducing variation in the roster and coaching staff, as players graduate, join, or leave the program. While Pomona-Pitzer is Division III, the PPWWP team plays Division I, II, and III teams throughout their season. Opponents in each division vary in difficulty, and thus I will only use the teams ranked in the final 2026 Collegiate Water Polo Association (CWPA) top 25. The CWPA national varsity rankings are determined by a committee of coaches and athletic representatives who rank teams based primarily on game results. Although Claremont-Mudd-Scripps (CMS) is not ranked in the top 25, I chose to include them, as they are PP’s rivals and PPWWP’s biggest Division III opponent. During the 2026 season, PPWWP played 14 games against 12 teams ranked in the top 25, with two of those opponents played twice. Additionally, PPWWP played against CMS four times, thus this project includes 18 games. The PPWWP coaching staff is most concerned with the top teams, and limiting the sample in this way addresses their needs accordingly.&nbsp;&nbsp;</p>
+<p>The raw data consist of Hudl Sportscode CSV export files from 18 PPWWP games. Across the 18 files, there are roughly 12,000 event-level observations, with approximately 500–750 tagged events per game. Each observation, or row of data, is a tagged interval or event on the game timeline. Each observation includes its start time, duration, event category, and instance number. Tags include shots, goals, possessions, exclusions, power-play situations, turnovers, player participation, and other game events. Because multiple tags can overlap during the same play, the exported files require additional organization before they can be used for shot analysis. Additionally, the files vary across games in the titles of tagged intervals/events, such as “PP Shot” vs “D Shot” (Dark) or “W Shot” (White), and the coded columns (i.e.&nbsp;some games have more columns than others). Therefore, this project requires standardizing the raw files, identifying PP shots and their relevant game-situation context, and combining these with the shot characteristics that need to be observed from the corresponding game film. The result will be a standardized workflow that produces a consistent data set where each row is one PP shot.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>raw_files <span class="ot">&lt;-</span> <span class="fu">list.files</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/raw"</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">"[.]csv$"</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">full.names =</span> <span class="cn">TRUE</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove old incomplete UCSD file</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>raw_files <span class="ot">&lt;-</span> raw_files[</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">basename</span>(raw_files) <span class="sc">!=</span> <span class="st">"GM1 - PPvsUCSD.csv"</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Check that R found the 18 files</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(raw_files)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 18</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>game_file_summary <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(raw_files, \(path) {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  game <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(path, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">game_number =</span> <span class="fu">as.numeric</span>(</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_extract</span>(<span class="fu">basename</span>(path), <span class="st">"(?&lt;=GM)</span><span class="sc">\\</span><span class="st">d+"</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">filename =</span> <span class="fu">basename</span>(path),</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">rows =</span> <span class="fu">nrow</span>(game),</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> <span class="fu">ncol</span>(game)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>}) <span class="sc">|&gt;</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(game_number)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>game_file_summary</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 18 × 4
+   game_number filename                          rows columns
+         &lt;dbl&gt; &lt;chr&gt;                            &lt;int&gt;   &lt;int&gt;
+ 1           1 GM1 - PPvsUCSD copy.csv            646      11
+ 2           3 GM3 - PPvsLBSU.csv                 721      40
+ 3           4 GM4 - PPvsSDSU.csv                 679      33
+ 4           5 GM5 - PPvsCMS.csv                  643      23
+ 5           9 GM9 - PPvsMarist.csv               604      22
+ 6          10 GM10 - PPvsSJSU.csv                551      22
+ 7          11 GM11 - PPvsUOP.csv                 585      22
+ 8          12 GM12 - PP vs CMS.csv               740      39
+ 9          16 GM16 - PPvsASU.csv                 675      22
+10          17 GM17 - PPvsCBU.csv                 688       8
+11          18 GM18 - PPvsWAG.csv                 692       8
+12          20 GM20 - PP vsPrinceton.csv          561       8
+13          22 GM22 - PPvsPU.csv                  522       8
+14          24 GM24 - PPvsSDSU.csv                750       8
+15          25 GM25 - PPvsIU.csv                  683       8
+16          27 GM27 - PPvsHarvard.csv             726      23
+17          33 GM33 - PP@CMS.csv                  626      39
+18          35 GM35 - SCIAC FINAL - PPvsCMS.csv   727       8</code></pre>
+</div>
+</div>
+</section>
+<section id="data-processing-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="data-processing-analysis">Data Processing &amp; Analysis</h2>
+<p>Before the shot data can be analyzed, the raw Sportscode files must first be cleaned and organized into a consistent structure. Each Sportscode CSV represents one tagged game. Although the same methodology is applied to each game, Sportscode labels and time stamps vary, making it necessary to code and process games individually.</p>
+<section id="creating-the-shot-data-set" class="level4">
+<h4 class="anchored" data-anchor-id="creating-the-shot-data-set">Creating the Shot Data Set</h4>
+<p>Each Sportscode CSV file represents the tagged events of a single game. The raw files contain hundreds of tagged time stamps and are first reduced to the start time, end time, duration, and event type.</p>
+<p>Using Game 3, played against Long Beach State for example:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>file_csv <span class="ot">&lt;-</span> <span class="st">"data/raw/GM3 - PPvsLBSU.csv"</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>tagged_actions <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  file_csv,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">action_id =</span> <span class="fu">row_number</span>(),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">start_time =</span> <span class="st">`</span><span class="at">Start time</span><span class="st">`</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">end_time =</span> <span class="st">`</span><span class="at">Start time</span><span class="st">`</span> <span class="sc">+</span> Duration,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">code =</span> Row,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">duration_time_sec =</span> Duration</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>tagged_actions <span class="sc">|&gt;</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 5
+  action_id start_time end_time code  duration_time_sec
+      &lt;int&gt;      &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;             &lt;dbl&gt;
+1         1       46.5     285. #10                238.
+2         2      370.      568. #10                198.
+3         3     1054.     1390. #10                336.
+4         4     2089.     2518. #10                429.
+5         5     2955.     3084. #10                130.</code></pre>
+</div>
+</div>
+<p>This creates a much more simplified version of the file while preserving all the information needed.</p>
+<p>The process of identifying Pomona-Pitzer (PP) shots varies slightly across games. In the LBSU game, PP shots are labeled “PP Shots”, however the exact labeling is inconsistent throughout files. The PP shots are filtered from the broader events table shown above, ordered by start time and assigned a shot ID.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>pp_shots <span class="ot">&lt;-</span> tagged_actions <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code <span class="sc">==</span> <span class="st">"PP Shots"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(start_time) <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">shot_id =</span> <span class="fu">row_number</span>(),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">start_time_min =</span> <span class="fu">floor</span>(start_time <span class="sc">/</span> <span class="dv">60</span>),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">start_time_sec =</span> start_time <span class="sc">%%</span> <span class="dv">60</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>pp_shots</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 32 × 8
+   action_id start_time end_time code   duration_time_sec shot_id start_time_min
+       &lt;int&gt;      &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;              &lt;dbl&gt;   &lt;int&gt;          &lt;dbl&gt;
+ 1       239       139.     154. PP Sh…              15         1              2
+ 2       240       240.     255. PP Sh…              15         2              3
+ 3       241       388.     403. PP Sh…              15.0       3              6
+ 4       242       473.     488. PP Sh…              15         4              7
+ 5       243       535.     550. PP Sh…              15         5              8
+ 6       244       610.     625. PP Sh…              15         6             10
+ 7       245       669.     684. PP Sh…              15         7             11
+ 8       246       832.     847. PP Sh…              15         8             13
+ 9       247      1153.    1168. PP Sh…              15         9             19
+10       248      1260.    1275. PP Sh…              15        10             20
+# ℹ 22 more rows
+# ℹ 1 more variable: start_time_sec &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>The LBSU game had 32 PP shots, which is seen in the number of rows.</p>
+</section>
+<section id="matching-sportscode-information" class="level4">
+<h4 class="anchored" data-anchor-id="matching-sportscode-information">Matching Sportscode Information</h4>
+<p>I use the time stamps of other Sportscode tags to add information that is already available from the tagged data. This includes whether a shot resulted in a goal and the corresponding possession situation, meaning if the shot came from an advantage possession (6on5 or 7on6), even possession, or penalty.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>pp_goals <span class="ot">&lt;-</span> tagged_actions <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code <span class="sc">==</span> <span class="st">"W Goals"</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>pp_shots <span class="ot">&lt;-</span> pp_shots <span class="sc">|&gt;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">|&gt;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">goal =</span> <span class="fu">as.integer</span>(</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">any</span>(</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        <span class="fu">abs</span>(pp_goals<span class="sc">$</span>start_time <span class="sc">-</span> start_time) <span class="sc">&lt;=</span> <span class="fl">2.1</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>pp_advantage <span class="ot">&lt;-</span> tagged_actions <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"W 6/5"</span>, <span class="st">"W 5/6"</span>, <span class="st">"W 7/6"</span>))</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>pp_penalties <span class="ot">&lt;-</span> tagged_actions <span class="sc">|&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(code <span class="sc">==</span> <span class="st">"W PENALTY"</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co"># add to the table</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>pp_shots <span class="ot">&lt;-</span> pp_shots <span class="sc">|&gt;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">|&gt;</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">advantage =</span> <span class="fu">case_when</span>(</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">any</span>( <span class="co"># Penalty shot </span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>        start_time <span class="sc">&gt;=</span> pp_penalties<span class="sc">$</span>end_time <span class="sc">&amp;</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>          start_time <span class="sc">-</span> pp_penalties<span class="sc">$</span>end_time <span class="sc">&lt;=</span> <span class="dv">15</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>      ) <span class="sc">~</span> <span class="st">"penalty"</span>,</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">any</span>(</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        pp_advantage<span class="sc">$</span>code <span class="sc">==</span> <span class="st">"W 7/6"</span> <span class="sc">&amp;</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>          start_time <span class="sc">&gt;=</span> pp_advantage<span class="sc">$</span>start_time <span class="sc">&amp;</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>          start_time <span class="sc">&lt;=</span> pp_advantage<span class="sc">$</span>end_time</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>      ) <span class="sc">~</span> <span class="st">"7v6"</span>,</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">any</span>(</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>        pp_advantage<span class="sc">$</span>code <span class="sc">==</span> <span class="st">"W 6/5"</span> <span class="sc">&amp;</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>          start_time <span class="sc">&gt;=</span> pp_advantage<span class="sc">$</span>start_time <span class="sc">&amp;</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>          start_time <span class="sc">&lt;=</span> pp_advantage<span class="sc">$</span>end_time</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>      ) <span class="sc">~</span> <span class="st">"6v5"</span>,</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"even"</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(pp_shots, advantage)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 2
+  advantage     n
+  &lt;chr&gt;     &lt;int&gt;
+1 6v5          10
+2 7v6           1
+3 even         19
+4 penalty       2</code></pre>
+</div>
+</div>
+<p>In the LBSU game, PP had 10 shots during 6on5, 1 shot during a 7on6 possession, 19 even, or normal possession, shots, and 2 penalty shots. Similar to the PP shot identification process, the labels of these events vary slightly across games.</p>
+</section>
+<section id="manual-coding" class="level4">
+<h4 class="anchored" data-anchor-id="manual-coding">Manual Coding</h4>
+<p>After the Sportscode information get processed, each game’s clean data set of shots gets exported to an Excel template. In addition to the identifiable information from Sportscode, the template holds space to enter additional variables I manually coded.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>coding_sheet <span class="ot">&lt;-</span> pp_shots <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">game_id =</span> <span class="st">"GM3"</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">opponent =</span> <span class="st">"Long Beach State"</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">shooter =</span> <span class="cn">NA_character_</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">shot_zone =</span> <span class="cn">NA_character_</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">shot_type =</span> <span class="cn">NA_character_</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">shot_prep =</span> <span class="cn">NA_character_</span>,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">target_loc =</span> <span class="cn">NA_character_</span>,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">defense =</span> <span class="cn">NA_character_</span>,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">result =</span> <span class="fu">if_else</span>(</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>      goal <span class="sc">==</span> <span class="dv">1</span>,</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Goal"</span>,</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>      <span class="cn">NA_character_</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>These variables include the shooter, their position, the shot preparation and type, the defensive situation, target location, advantage-specific variables, and more. The Excel template uses pre-defined drop down menus to enter values, which limits typing errors and keeps the coding consistent across games.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>shot_type_options <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Direct"</span>, <span class="st">"Skip"</span>, <span class="st">"Lob"</span>, <span class="st">"Other"</span>, <span class="st">"Unsure"</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>shot_prep_options <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Catch &amp; Shot"</span>, <span class="st">"Quick"</span>, <span class="st">"Fake &amp; Shot"</span>, <span class="st">"Foul &amp; Shot"</span>, <span class="st">"Pick-Up &amp; Shot"</span>, <span class="st">"Other"</span>, <span class="st">"N/A"</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>defense_options <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Open"</span>, <span class="st">"Pressured"</span>, <span class="st">"Dropped Back"</span>, <span class="st">"Unsure"</span>, <span class="st">"N/A"</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>result_options <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Goal"</span>, <span class="st">"Goalie Save"</span>, <span class="st">"Field Block"</span>, <span class="st">"Miss"</span>, <span class="st">"Unsure"</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>To complete the shot data set, I review each individual shot using its corresponding time stamp, and record the manually coded characteristics.</p>
+</section>
+<section id="analysis" class="level4">
+<h4 class="anchored" data-anchor-id="analysis">Analysis</h4>
+<p>Once all 18 games are processed and reviewed, they will be combined into one data set. The analysis will use the primary outcome variable of whether a shot resulted in a goal, and will use counts, shooting percentages, and visualizations to look at the PPWWP team’s shooting patterns. Using a Shiny dashboard, coaches will be able to interact with filters to reveal different PPWWP shooting patterns.</p>
+</section>
+</section>
+<section id="ethical-challenges-limitations" class="level2">
+<h2 class="anchored" data-anchor-id="ethical-challenges-limitations">Ethical Challenges &amp; Limitations</h2>
+<p>A main ethical consideration in my capstone project is making sure that the data is consistent and accurate. There are two components to collecting shot data from the game film that each have their own ethical considerations: the Sportscode data and the shot characteristics data. The Sportscode data captures the tagged timeline of each game. It records the opponent, start time of the shot, the duration, number of shots in a game, the type of possession (counter attack, 6on5, 7on6, penalty, or even), and the result of the shot (goal or non-goal). This data is entered by a player or coach either during or after the game, which leaves room for human error in the tagging process. The film-tagger may accidentally give a shot to the wrong team, start the shot tag way before the shot took place, or accidentally exclude the type of possession of the shot. While these errors are a concern in the accuracy of the shot data, they are not a large concern of this project. The main concentration is creating a shot-analysis dashboard with the tagged data the PPWWP team already has. The shot characteristics data is manually-entered observations that I will enter in a coded Excel sheet with dropdown menus to avoid typos and misspelled data. The shot characteristics capture the shot type, the shooter’s location, if the shooter was a center, the shot location in the goal, and if there was defensive pressure. This data will be entered as I watch the tagged game footage, which also leaves room for human error. Some shot characteristic entries may be subjective. For example, if a shooter is in between two positions, I may record a position that another reviewer disagrees with. While human error and bias cannot be completely avoided, I will carefully define each manual shot characteristic in a data dictionary to address human error the best I can.&nbsp;</p>
+<p>Another ethical consideration is the potential for bias in my selection of games and shot characteristics. I am focusing on games played against the nationally ranked top 25 opponents and Claremont-Mudd-Scripps rather than using all the games played during the 2026 season. While this keeps games competitive and makes the amount of film manageable, it additionally means the dataset may not fully represent PPWWP’s overall shooting performance, as PPWWP was ranked just outside the top 25 teams for the 2026 season. Many games against top-ranked opponents resulted in losses, and the shooting statistics could reflect the opponent’s difficulty rather than the PPWWP team’s typical performance. The selection of shot characteristics may also create some ethical considerations. The manually coded shot-characteristics may not capture every aspect of a shot, due to the nuances of sports games, however, they will capture most. To address these biases the best I can, I will create filters such as a score-differential slider, opponent selection, and shot characteristic selection, which will allow coaches to filter shot statistics in the context of how competitive matches were. This won’t eliminate bias, but will help viewers interpret the results.&nbsp;</p>
+<p>Finally, because the project uses team-owned footage and individual player statistics, a large ethical consideration is player privacy and how the data is shared. I plan to limit the identifiable information of players and work with the coaching staff to determine how the dashboard will be used. Ultimately, my goal is to create a system that collects data and presents it in a useful, accurate, and reliable way. While I have not yet completed the full coding process or application, I am incorporating these considerations into the project’s design.</p>
+<p><br>
+</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>The primary contribution of this project is the development of a reproducible process for transforming PPWWP’s existing Sportscode data into a standardized shot-level dataset. Although the coaching staff already collects information through game tagging, the raw exports contain overlapping events, inconsistent naming conventions, information that still requires manual review, or simply not enough automated information to make substantial conclusions.</p>
+<p>The workflow developed in this project separates information that can be extracted automatically from information that requires human observation. R is used to identify shots, attach existing Sportscode context, validate outcomes, and organize the data, while a standardized coding template is used for shot characteristics that require film review.</p>
+<p>The next steps are to finish processing the remaining games, complete the manual shot coding, combine the individual games into one master data set, and analyze shooting patterns. The final stage of the project will use an R Shiny dashboard to make the resulting data easier for coaches to explore.</p>
+<p>Even if the final statistical analysis remains relatively simple, the project demonstrates an important role for data science in sports: creating reliable and reproducible systems that turn information that already exists into data that can actually be analyzed and used.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>Canossa, S., Abraldes, J. A., Estriga, L., Fernandes, R. J., &amp; Garganta, J. (2020). “Water Polo Shooting Performance: Differences Between World Championship Winning, Drawing and Losing Teams.” Journal of Human Kinetics, 72, 203–214. doi:10.2478/hukin-2019-0107.</p>
+<p>Goudsmit, J., Otter, R. T. A., Stoter, I., van Holland, B., van der Zwaard, S., de Jong, J., &amp; Vos, S. (2022). “Co-Operative Design of a Coach Dashboard for Training Monitoring and Feedback.” Sensors, 22(23), 9073. doi:10.3390/s22239073.</p>
+<p>Gullikson, J., Gale, L. R., Mayberry, J. K., Kim, J., &amp; Killick, L. (2023). “Production functions of NCAA men and women water polo matches.” Journal of Sports Analytics, 9(2), 141–155. doi:10.3233/JSA-220600.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
